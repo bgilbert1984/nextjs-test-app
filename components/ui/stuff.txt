@@ -1,0 +1,58 @@
+pnpm build
+
+> open-react-test@0.1.0 build /home/ashben/www/html/tst-ti-pics
+> next build
+
+   ▲ Next.js 15.1.6
+   - Environments: .env.local
+
+   Creating an optimized production build ...
+(node:486555) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+Failed to compile.
+
+./app/(default)/layout.tsx
+Module not found: Can't resolve './global.css'
+
+https://nextjs.org/docs/messages/module-not-found
+
+./lib/passport.ts
+Module not found: Can't resolve 'passport'
+Did you mean './passport'?
+Requests that should resolve in the current directory need to start with './'.
+Requests that start with a name are treated as module requests and resolve within module directories (node_modules, /home/as
+hben/www/html/tst-ti-pics/node_modules/.pnpm/next@15.1.6_@opentelemetry+api@1.9.0_react-dom@19.0.0_react@19.0.0__react@19.0.0/node_modules/next/dist/bin/node_modules, /home/ashben/www/html/tst-ti-pics/node_modules/.pnpm/next@15.1.6_@opentelemetry+api@1.9.0_react-dom@19.0.0_react@19.0.0__react@19.0.0/node_modules/next/dist/node_modules, /home/ashben/www/html/tst-ti-pics/node_modules/.pnpm/next@15.1.6_@opentelemetry+api@1.9.0_react-dom@19.0.0_react@19.0.0__react@19.0.0/node_modules/next/node_modules, /home/ashben/www/html/tst-ti-pics/node_modules/.pnpm/next@15.1.6_@opentelemetry+api@1.9.0_react-dom@19.0.0_react@19.0.0__react@19.0.0/node_modules, /home/ashben/www/html/tst-ti-pics/node_modules/.pnpm/node_modules).                         If changing the source code is not an option there is also a resolve options called 'preferRelative' which tries to resolve 
+these kind of requests in the current directory too.                                                                        
+https://nextjs.org/docs/messages/module-not-found
+
+Import trace for requested module:
+./app/api/auth/google/route.ts
+
+./lib/passport.ts
+Module not found: Can't resolve 'passport-google-oauth20'
+
+https://nextjs.org/docs/messages/module-not-found
+
+Import trace for requested module:
+./app/api/auth/google/route.ts
+
+./lib/passport.ts
+Module not found: Can't resolve '@prisma/client'
+
+https://nextjs.org/docs/messages/module-not-found
+
+Import trace for requested module:
+./app/api/auth/google/route.ts
+
+./utils/jwt.ts
+Module not found: Can't resolve 'jsonwebtoken'
+
+https://nextjs.org/docs/messages/module-not-found
+
+Import trace for requested module:
+./lib/passport.ts
+./app/api/auth/google/route.ts
+
+
+> Build failed because of webpack errors
+ ELIFECYCLE  Command failed with exit code 1.
