@@ -3,24 +3,25 @@
 import { useEffect, useState } from 'react';
 
 interface DataItem {
-  _id: string;
+  id: number;
   name: string;
+  created_at: string; // Adjust types as needed
 }
 
-const MongoTest = () => {
-  const [data, setData] = useState<DataItem[] | null>(null); // Specify type
-  const [error, setError] = useState<string | null>(null); // Add error state
+const CrateTest = () => {
+  const [data, setData] = useState<DataItem[] | null>(null);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     async function fetchData() {
       try {
-        const response = await fetch('/api/mongodb');
-        if (!response.ok) { // Check for HTTP errors
+        const response = await fetch('/api/cratedb'); // CORRECT API ROUTE
+        if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
         }
         const result = await response.json();
         setData(result);
-      } catch (error: any) {
+      } catch (error:any) {
         console.error('Failed to fetch data:', error);
         setError(error.message || 'Failed to fetch data'); // Set error message
       }
@@ -39,14 +40,16 @@ const MongoTest = () => {
 
   return (
     <div>
-      <h2>MongoDB Test Data</h2>
+      <h2>CrateDB Data</h2>
       <ul>
         {data.map((item) => (
-          <li key={item._id}>{item.name}</li>
+          <li key={item.id}>
+            {item.name} - {item.created_at}
+          </li>
         ))}
       </ul>
     </div>
   );
 };
 
-export default MongoTest;
+export default CrateTest;

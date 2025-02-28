@@ -1,18 +1,17 @@
-// jest.config.js
+// /home/ashben/www/html/tipics/nextjs-test-app/jest.config.js
 module.exports = {
-    testEnvironment: 'jsdom', // Important for React component testing
-    setupFilesAfterEnv: ['<rootDir>/jest.setup.ts'], // Optional setup file
-    testPathIgnorePatterns: ['<rootDir>/.next/', '<rootDir>/node_modules/'],
-    moduleNameMapper: {
-      '^@/(.*)$': '<rootDir>/$1', // Adjust if your paths are different.
-    },
-    transform: {
-      // Use babel-jest to transpile tests with the next/babel preset
-      // https://jestjs.io/docs/configuration#transform-objectstring-pathtotransformer--pathtotransformer-object
-      '^.+\\.(js|jsx|ts|tsx)$': ['babel-jest', { presets: ['next/babel'] }],
+  setupFilesAfterEnv: ['<rootDir>/jest.setup.js'],
+  testPathIgnorePatterns: ['<rootDir>/.next/', '<rootDir>/node_modules/'],
+  moduleNameMapper: {
+    "^@/components/(.*)$": "<rootDir>/components/$1",
+    "^@/(.*)$": "<rootDir>/app/$1"
   },
-  transformIgnorePatterns: [
-    '/node_modules/',
-    '^.+\\.module\\.(css|sass|scss)$',
-  ],
-  };
+  testMatch: ["**/*.test.ts", "**/*.test.tsx"],
+  testEnvironment: 'node', // Correct for API route tests
+  transform: {
+    '^.+\\.(ts|tsx)$': ['ts-jest', { // Correct ts-jest config
+      tsconfig: 'tsconfig.json', // Use tsconfig.json
+    }],
+  },
+    // NO globals section!
+};
