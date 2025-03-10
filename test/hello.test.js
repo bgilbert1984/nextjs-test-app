@@ -1,7 +1,7 @@
-const assert = require('assert');
+import { describe, it, expect } from 'vitest';
 
-describe('Hello World Test', function() {
-  it('should return true', function() {
-    assert.strictEqual(true, true);
+describe('Hello World Test', () => {
+  it('should return true', () => {
+    expect(true).toBe(true);
   });
 });

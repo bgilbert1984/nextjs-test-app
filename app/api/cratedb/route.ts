@@ -1,3 +1,5 @@
+declare module 'node-crate';
+
 // app/api/cratedb/route.ts
 import { NextResponse } from 'next/server';
 import crate from 'node-crate';
@@ -11,18 +13,21 @@ const CRATE_PASSWORD = process.env.CRATE_PASSWORD || ''; //  Password (if requir
 // Construct the connection string.  Handle HTTPS and authentication.
 const connectionString = `http://${CRATE_HOST}:${CRATE_PORT}`;
 
-
 export async function GET(request: Request) {
+  // Check method first
+  if (request.method !== 'GET') {
+    return NextResponse.json({ error: 'Method not allowed' }, { status: 405 });
+  }
+
   try {
-      crate.connect(connectionString, CRATE_USER, CRATE_PASSWORD); // Connect
-      //console.log("connect", connectionString, CRATE_USER, CRATE_PASSWORD)
-    const result = await crate.execute('SELECT * FROM doc.mytable;'); // Adapt the query
-    return NextResponse.json(result.rows);
+    crate.connect(connectionString, CRATE_USER, CRATE_PASSWORD); // Connect
+    const data = await crate.execute('SELECT * FROM doc.mytable ORDER BY created_at DESC');
+    return NextResponse.json({ data: data.rows });
   } catch (error: any) {
     console.error('Error fetching data from CrateDB:', error);
     return NextResponse.json({ error: 'Failed to fetch data' }, { status: 500 });
   } finally {
-      crate.close();
+    crate.close();
   }
 }
 

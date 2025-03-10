@@ -7,11 +7,11 @@ module.exports = {
     "^@/(.*)$": "<rootDir>/app/$1"
   },
   testMatch: ["**/*.test.ts", "**/*.test.tsx"],
-  testEnvironment: 'node', // Correct for API route tests
+  testEnvironment: 'jsdom', // Correct for component tests
   transform: {
     '^.+\\.(ts|tsx)$': ['ts-jest', { // Correct ts-jest config
       tsconfig: 'tsconfig.json', // Use tsconfig.json
     }],
   },
-    // NO globals section!
+  // NO globals section!
 };
