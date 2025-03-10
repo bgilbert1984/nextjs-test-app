@@ -1,6 +1,6 @@
 import React from 'react';
 import { render, screen } from '@testing-library/react';
-import '@testing-library/jest-dom/vitest';
+import '@testing-library/jest-dom';
 import { describe, it, expect, vi } from 'vitest';
 import Page from './page';
 
@@ -23,6 +23,15 @@ vi.mock('@/components/CaptivePortal', () => ({
 
 vi.mock('@/components/WebSocketClient', () => ({
   default: () => <div data-testid="mock-websocket-client">Mock WebSocketClient</div>
+}));
+
+// Mock dynamic imports
+vi.mock('next/dynamic', () => ({
+  default: () => {
+    return function DynamicComponent() {
+      return <div data-testid="mock-dynamic-component">Mock Dynamic Component</div>;
+    };
+  }
 }));
 
 vi.mock('next/link', () => ({

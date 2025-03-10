@@ -34,25 +34,9 @@ const Neuron = ({ position, intensity }: NeuronData) => {
   );
 };
 
-const NeuralVisualization = ({ neurons = [], status = "Initializing..." }: NeuralVisualizationProps) => {
-  const controlsRef = useRef(null);
-
-  return (
-    <div style={{ width: '100vw', height: '100vh' }}>
-      <p>Status: {status}</p>
-      <Canvas camera={{ position: [0, 0, 5], fov: 75 }}>
-        <AmbientLight intensity={0.5} />
-        <PointLight position={[10, 10, 10]} />
-        {neurons.map((neuron, i) => (
-          <Neuron key={i} position={neuron.position} intensity={neuron.intensity} />
-        ))}
-        <OrbitControls ref={controlsRef} />
-        <Html position={[0, 5, 0]}>
-          <div>Neural Activity Visualization</div>
-        </Html>
-      </Canvas>
-    </div>
-  );
+// Placeholder for NeuralVisualization component
+const NeuralVisualization = () => {
+  return <div>NeuralVisualization Component</div>;
 };
 
 export default NeuralVisualization;

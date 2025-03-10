@@ -3,9 +3,9 @@
 
 import React from 'react';
 
+// Placeholder for WebSocketClient component
 const WebSocketClient = () => {
-  // ... your component logic ...
-  return <div>WebSocket Client</div>;
+  return <div>WebSocketClient Component</div>;
 };
 
-export default WebSocketClient; // ADD THIS LINE!
+export default WebSocketClient;

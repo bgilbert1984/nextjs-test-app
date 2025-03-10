@@ -38,8 +38,15 @@
     ],
     "baseUrl": ".",
     "paths": {
-      "@/components/*": ["components/*"],
-      "@/*": ["app/*"]
+      "@/components/*": ["./components/*"],
+      "@/*": ["./app/*"],
+      "@/components/hero": ["./components/hero"],
+      "@/components/SlateEditor": ["./components/SlateEditor"],
+      "@/components/CrateTest": ["./components/CrateTest"],
+      "@/components/CaptivePortal": ["./components/CaptivePortal"],
+      "@/components/WebSocketClient": ["./components/WebSocketClient"],
+      "@/components/NeuralVisualization": ["./components/NeuralVisualization"],
+      "@/components/NetworkVisualization": ["./components/NetworkVisualization"]
     }
   },
   "include": [
