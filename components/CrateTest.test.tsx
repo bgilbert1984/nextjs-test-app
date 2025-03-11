@@ -1,32 +1,36 @@
+// components/CrateTest.test.tsx
+import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, waitFor } from '@testing-library/react';
 import CrateTest from './CrateTest';
-import { describe, it, expect, vi, beforeEach } from 'vitest';
-import '@testing-library/jest-dom/vitest'; // This is crucial for toBeInTheDocument()
 
-global.fetch = vi.fn(); // Mock the global fetch function
+// Mock the fetch function
+beforeEach(() => {
+  vi.resetAllMocks();
+  
+  // Clear localStorage mocks
+  global.fetch = vi.fn();
+});
 
 describe('CrateTest', () => {
-  beforeEach(() => {
-    (global.fetch as vi.Mock).mockClear(); // Clear mock before each test
-
-    // Default mock implementation (successful fetch)
-    (global.fetch as vi.Mock).mockResolvedValue({
-      ok: true,
-      json: async () => [
-        { id: 1, name: 'Test Item 1', created_at: '2024-02-13T12:00:00.000Z' },
-        { id: 2, name: 'Test Item 2', created_at: '2024-02-13T13:00:00.000Z' },
-      ],
-    });
-  });
-
   it('renders loading state initially', async () => {
     render(<CrateTest />);
-    // Use findByText for initial loading state
-    expect(await screen.findByText('Loading...')).toBeInTheDocument();
+    // Use getByText for initial loading state
+    expect(screen.getByText('Loading...')).toBeInTheDocument();
   });
 
   it('renders CrateDB items on successful fetch', async () => {
-    render(<CrateTest />); // Render
+    // Mock successful fetch response
+    global.fetch = vi.fn().mockResolvedValueOnce({
+      ok: true,
+      json: async () => ({ 
+        data: [
+          { id: 1, name: 'Test Item 1', created_at: '2024-02-13T12:00:00.000Z' },
+          { id: 2, name: 'Test Item 2', created_at: '2024-02-13T13:00:00.000Z' }
+        ]
+      })
+    });
+
+    render(<CrateTest />);
 
     // Use waitFor to wait for the data to appear
     await waitFor(() => {
@@ -36,9 +40,10 @@ describe('CrateTest', () => {
   });
 
   it('renders error message on fetch failure', async () => {
-    (global.fetch as vi.Mock).mockResolvedValueOnce({
+    // Mock fetch with HTTP error
+    global.fetch = vi.fn().mockResolvedValueOnce({
       ok: false,
-      status: 500,
+      status: 500
     });
 
     render(<CrateTest />);
@@ -49,51 +54,64 @@ describe('CrateTest', () => {
   });
 
   it('renders error message on json failure', async () => {
-    (global.fetch as vi.Mock).mockResolvedValueOnce({
+    // Mock fetch with JSON error
+    global.fetch = vi.fn().mockResolvedValueOnce({
       ok: true,
-      json: vi.fn().mockRejectedValue(new Error("Test Error"))
+      json: async () => { throw new Error('Test Error'); }
     });
 
     render(<CrateTest />);
 
     await waitFor(() => {
-      expect(screen.getByText("Error: Test Error")).toBeInTheDocument();
+      expect(screen.getByText('Error: Test Error')).toBeInTheDocument();
     });
   });
 
   it('renders without crashing', async () => {
+    // Mock successful fetch response
+    global.fetch = vi.fn().mockResolvedValueOnce({
+      ok: true,
+      json: async () => ({ 
+        data: [
+          { id: 1, name: 'Test Item 1', created_at: '2024-02-13T12:00:00.000Z' },
+        ]
+      })
+    });
+    
     render(<CrateTest />);
-    expect(screen.getByText('Loading...')).toBeInTheDocument(); // First check loading state
+    expect(screen.getByText('Loading...')).toBeInTheDocument();
+    
     await waitFor(() => {
       expect(screen.getByText('Test Item 1 - 2024-02-13T12:00:00.000Z')).toBeInTheDocument();
     });
   });
 
   it('renders no items when fetch returns empty array', async () => {
-    // Mock successful fetch with empty data array
-    (global.fetch as vi.Mock).mockResolvedValueOnce({
+    // Mock successful fetch with empty array
+    global.fetch = vi.fn().mockResolvedValueOnce({
       ok: true,
-      json: async () => [],
+      json: async () => ({ data: [] })
     });
 
     render(<CrateTest />);
 
     await waitFor(() => {
-      // Check for empty list instead of a specific message
-      const list = screen.getByRole('list'); // Find the <ul> element
-      expect(list).toBeInTheDocument();
-      expect(list.children).toHaveLength(0); // Verify it has no child elements
+      // Check for empty list message
+      expect(screen.getByText('No items found')).toBeInTheDocument();
     });
   });
 
   it('renders multiple items correctly', async () => {
-    (global.fetch as vi.Mock).mockResolvedValueOnce({
+    // Mock successful fetch with multiple items
+    global.fetch = vi.fn().mockResolvedValueOnce({
       ok: true,
-      json: async () => [
-        { id: 1, name: 'Test Item 1', created_at: '2024-02-13T12:00:00.000Z' },
-        { id: 2, name: 'Test Item 2', created_at: '2024-02-13T13:00:00.000Z' },
-        { id: 3, name: 'Test Item 3', created_at: '2024-02-13T14:00:00.000Z' },
-      ],
+      json: async () => ({ 
+        data: [
+          { id: 1, name: 'Test Item 1', created_at: '2024-02-13T12:00:00.000Z' },
+          { id: 2, name: 'Test Item 2', created_at: '2024-02-13T13:00:00.000Z' },
+          { id: 3, name: 'Test Item 3', created_at: '2024-02-13T14:00:00.000Z' }
+        ]
+      })
     });
 
     render(<CrateTest />);
@@ -106,7 +124,8 @@ describe('CrateTest', () => {
   });
 
   it('handles network error gracefully', async () => {
-    (global.fetch as vi.Mock).mockRejectedValueOnce(new Error('Network Error'));
+    // Mock network error
+    global.fetch = vi.fn().mockRejectedValueOnce(new Error('Network Error'));
 
     render(<CrateTest />);
 

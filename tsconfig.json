@@ -1,18 +1,14 @@
 {
   "compilerOptions": {
     "module": "esnext",
-    "target": "es5",
+    "target": "es2017",
     "lib": [
-      "ES2020",
-      "DOM",
-      "DOM.Iterable",
       "dom",
-      "es6",
       "dom.iterable",
       "esnext"
     ],
-    "jsx": "react-jsx",
-    "moduleResolution": "bundler",
+    "jsx": "preserve",
+    "moduleResolution": "node",
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
     "strict": true,
@@ -28,7 +24,7 @@
     "noUnusedLocals": true,
     "noUnusedParameters": true,
     "noFallthroughCasesInSwitch": true,
-    "types": ["vitest/globals"],
+    "types": ["vitest/globals", "@testing-library/jest-dom"],
     "outDir": "./dist",
     "rootDir": ".",
     "plugins": [
@@ -38,22 +34,13 @@
     ],
     "baseUrl": ".",
     "paths": {
-      "@/components/*": ["./components/*"],
-      "@/*": ["./app/*"],
-      "@/components/hero": ["./components/hero"],
-      "@/components/SlateEditor": ["./components/SlateEditor"],
-      "@/components/CrateTest": ["./components/CrateTest"],
-      "@/components/CaptivePortal": ["./components/CaptivePortal"],
-      "@/components/WebSocketClient": ["./components/WebSocketClient"],
-      "@/components/NeuralVisualization": ["./components/NeuralVisualization"],
-      "@/components/NetworkVisualization": ["./components/NetworkVisualization"]
+      "@/*": ["./*"]
     }
   },
   "include": [
     "next-env.d.ts",
     "**/*.ts",
-    "**/*.tsx",
-    ".next/types/**/*.ts"
+    "**/*.tsx"
   ],
   "exclude": [
     "node_modules"

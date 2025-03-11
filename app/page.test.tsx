@@ -1,7 +1,7 @@
 import React from 'react';
 import { render, screen } from '@testing-library/react';
 import '@testing-library/jest-dom';
-import { describe, it, expect, vi } from 'vitest';
+import { test, expect, vi } from 'vitest';
 import Page from './page';
 
 // Mock the child components using Vitest
@@ -40,30 +40,28 @@ vi.mock('next/link', () => ({
   )
 }));
 
-describe('Page Component', () => {
-  it('renders all components', () => {
-    render(<Page />);
-    expect(screen.getByTestId('mock-hero')).toBeInTheDocument();
-    expect(screen.getByTestId('mock-slate-editor')).toBeInTheDocument();
-    expect(screen.getByTestId('mock-crate-test')).toBeInTheDocument();
-    expect(screen.getByTestId('mock-captive-portal')).toBeInTheDocument();
-    expect(screen.getByText('View Network Visualization')).toBeInTheDocument();
-    expect(screen.getByText('Run Python Script')).toBeInTheDocument();
-    expect(screen.getByTestId('mock-websocket-client')).toBeInTheDocument();
-    expect(screen.getByText('WebSocket Example (Direct)')).toBeInTheDocument();
-  });
+test('renders all components', () => {
+  render(<Page />);
+  expect(screen.getByTestId('mock-hero')).toBeInTheDocument();
+  expect(screen.getByTestId('mock-slate-editor')).toBeInTheDocument();
+  expect(screen.getByTestId('mock-crate-test')).toBeInTheDocument();
+  expect(screen.getByTestId('mock-captive-portal')).toBeInTheDocument();
+  expect(screen.getByText('View Network Visualization')).toBeInTheDocument();
+  expect(screen.getByText('Run Python Script')).toBeInTheDocument();
+  expect(screen.getByTestId('mock-websocket-client')).toBeInTheDocument();
+  expect(screen.getByText('WebSocket Example (Direct)')).toBeInTheDocument();
+});
 
-  it('renders the Link component with correct href', () => {
-    render(<Page />);
-    const linkElement = screen.getByRole('link', { name: 'View Network Visualization' });
-    expect(linkElement).toBeInTheDocument();
-    expect(linkElement).toHaveAttribute('href', '/network-visualization');
-  });
+test('renders the Link component with correct href', () => {
+  render(<Page />);
+  const linkElement = screen.getByRole('link', { name: 'View Network Visualization' });
+  expect(linkElement).toBeInTheDocument();
+  expect(linkElement).toHaveAttribute('href', '/network-visualization');
+});
 
-  it('renders the Python script link', () => {
-    render(<Page />);
-    const linkElement = screen.getByRole('link', { name: 'Run Python Script' });
-    expect(linkElement).toBeInTheDocument();
-    expect(linkElement).toHaveAttribute('href', '/api/hello');
-  });
+test('renders the Python script link', () => {
+  render(<Page />);
+  const linkElement = screen.getByRole('link', { name: 'Run Python Script' });
+  expect(linkElement).toBeInTheDocument();
+  expect(linkElement).toHaveAttribute('href', '/api/hello');
 });
