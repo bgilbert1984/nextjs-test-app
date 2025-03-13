@@ -1,7 +1,7 @@
 import React from 'react';
-import { render, screen } from '@testing-library/react';
+import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import '@testing-library/jest-dom';
-import { test, expect, vi } from 'vitest';
+import { test, expect, vi, describe, beforeEach } from 'vitest';
 import Page from './page';
 
 // Mock the child components using Vitest
@@ -40,28 +40,94 @@ vi.mock('next/link', () => ({
   )
 }));
 
-test('renders all components', () => {
-  render(<Page />);
-  expect(screen.getByTestId('mock-hero')).toBeInTheDocument();
-  expect(screen.getByTestId('mock-slate-editor')).toBeInTheDocument();
-  expect(screen.getByTestId('mock-crate-test')).toBeInTheDocument();
-  expect(screen.getByTestId('mock-captive-portal')).toBeInTheDocument();
-  expect(screen.getByText('View Network Visualization')).toBeInTheDocument();
-  expect(screen.getByText('Run Python Script')).toBeInTheDocument();
-  expect(screen.getByTestId('mock-websocket-client')).toBeInTheDocument();
-  expect(screen.getByText('WebSocket Example (Direct)')).toBeInTheDocument();
-});
+// Mock fetch for Claude API calls
+const mockFetch = vi.fn();
+global.fetch = mockFetch;
 
-test('renders the Link component with correct href', () => {
-  render(<Page />);
-  const linkElement = screen.getByRole('link', { name: 'View Network Visualization' });
-  expect(linkElement).toBeInTheDocument();
-  expect(linkElement).toHaveAttribute('href', '/network-visualization');
-});
+describe('Page Component', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
 
-test('renders the Python script link', () => {
-  render(<Page />);
-  const linkElement = screen.getByRole('link', { name: 'Run Python Script' });
-  expect(linkElement).toBeInTheDocument();
-  expect(linkElement).toHaveAttribute('href', '/api/hello');
+  test('renders all components', () => {
+    render(<Page />);
+    expect(screen.getByTestId('mock-hero')).toBeInTheDocument();
+    expect(screen.getByTestId('mock-slate-editor')).toBeInTheDocument();
+    expect(screen.getByTestId('mock-crate-test')).toBeInTheDocument();
+    expect(screen.getByTestId('mock-captive-portal')).toBeInTheDocument();
+    expect(screen.getByText('View Network Visualization')).toBeInTheDocument();
+    expect(screen.getByText('Run Python Script')).toBeInTheDocument();
+    expect(screen.getByTestId('mock-websocket-client')).toBeInTheDocument();
+    expect(screen.getByText('WebSocket Example (Direct)')).toBeInTheDocument();
+  });
+
+  test('renders the Claude chat interface', () => {
+    render(<Page />);
+    expect(screen.getByText('Ask Claude')).toBeInTheDocument();
+    expect(screen.getByPlaceholderText('Enter your message for Claude...')).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Send to Claude' })).toBeInTheDocument();
+  });
+
+  test('handles successful Claude API call', async () => {
+    mockFetch.mockResolvedValueOnce({
+      ok: true,
+      json: () => Promise.resolve({ response: 'Test response from Claude' }),
+    });
+
+    render(<Page />);
+    const textarea = screen.getByPlaceholderText('Enter your message for Claude...');
+    const submitButton = screen.getByRole('button', { name: 'Send to Claude' });
+
+    fireEvent.change(textarea, { target: { value: 'Test prompt' } });
+    fireEvent.click(submitButton);
+
+    expect(submitButton).toHaveTextContent('Sending...');
+    expect(submitButton).toBeDisabled();
+
+    await waitFor(() => {
+      expect(screen.getByText('Claude\'s Response:')).toBeInTheDocument();
+      expect(screen.getByText('Test response from Claude')).toBeInTheDocument();
+      expect(submitButton).toHaveTextContent('Send to Claude');
+      expect(submitButton).not.toBeDisabled();
+    });
+
+    expect(mockFetch).toHaveBeenCalledWith('/api/anthropic', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ message: 'Test prompt' }),
+    });
+  });
+
+  test('handles API error', async () => {
+    mockFetch.mockResolvedValueOnce({
+      ok: false,
+      json: () => Promise.resolve({ error: 'API Error' }),
+    });
+
+    render(<Page />);
+    const textarea = screen.getByPlaceholderText('Enter your message for Claude...');
+    const submitButton = screen.getByRole('button', { name: 'Send to Claude' });
+
+    fireEvent.change(textarea, { target: { value: 'Test prompt' } });
+    fireEvent.click(submitButton);
+
+    await waitFor(() => {
+      expect(screen.getByText('API Error')).toBeInTheDocument();
+      expect(submitButton).not.toBeDisabled();
+    });
+  });
+
+  test('renders the Link component with correct href', () => {
+    render(<Page />);
+    const linkElement = screen.getByRole('link', { name: 'View Network Visualization' });
+    expect(linkElement).toBeInTheDocument();
+    expect(linkElement).toHaveAttribute('href', '/network-visualization');
+  });
+
+  test('renders the Python script link', () => {
+    render(<Page />);
+    const linkElement = screen.getByRole('link', { name: 'Run Python Script' });
+    expect(linkElement).toBeInTheDocument();
+    expect(linkElement).toHaveAttribute('href', '/api/hello');
+  });
 });

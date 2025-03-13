@@ -1,68 +1,90 @@
-import React from 'react';
-import Link from 'next/link';
-import Hero from '../components/hero';
-import SlateEditor from '../components/SlateEditor';
-import CrateTest from '../components/CrateTest';
-import CaptivePortal from '../components/CaptivePortal';
-import WebSocketClient from '../components/WebSocketClient';
+// app/page.tsx
+"use client";
+import { useState } from 'react';
 import dynamic from 'next/dynamic';
+import FileUpload from '../components/FileUpload'; // Import the FileUpload component
 
-// Use dynamic import with SSR disabled for components that use browser-only APIs
-const NeuralVisualization = dynamic(
-  () => import('../components/NeuralVisualization'), 
-  { ssr: false }
-);
 
-const NetworkVisualization = dynamic(
-  () => import('../components/NetworkVisualization'),
-  { ssr: false }
-);
+const NeuralVisualization = dynamic(() => import('../components/NeuralVisualization'), {
+  ssr: false,
+});
 
-const Page: React.FC = () => {
+export default function Home() {
+  const [message, setMessage] = useState('');
+  const [response, setResponse] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
+  const [uploadedFile, setUploadedFile] = useState<string | null>(null); // Track uploaded file
+
+  const handleUploadSuccess = (filename: string) => {
+		setUploadedFile(filename);
+        // Do whatever you want with the filename here.
+        // You could, for example, send it to Claude for analysis.
+	  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+    setError('');
+    setResponse('');
+
+    try {
+      const res = await fetch('/api/anthropic', { // Correct API route
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ message }),
+      });
+
+      const data = await res.json();
+
+      if (res.ok) {
+        setResponse(data.response);
+      } else {
+        setError(data.error || 'An error occurred.');
+      }
+    } catch (err) {
+        setError('Failed to communicate with the API.'); // More specific error
+    } finally {
+      setLoading(false);
+    }
+  };
   return (
-    <main className="container mx-auto px-4">
-      <Hero />
-      
-      <nav className="my-6 flex gap-4">
-        <Link href="/network-visualization" className="px-4 py-2 bg-blue-500 text-white rounded">
-          View Network Visualization
-        </Link>
-        <Link href="/api/hello" className="px-4 py-2 bg-green-500 text-white rounded">
-          Run Python Script
-        </Link>
-      </nav>
-      
-      <section className="mb-8">
-        <h2 className="text-2xl font-bold mb-4">Slate Editor</h2>
-        <SlateEditor />
-      </section>
-      
-      <section className="mb-8">
-        <h2 className="text-2xl font-bold mb-4">CrateDB Integration</h2>
-        <CrateTest />
-      </section>
-      
-      <section className="mb-8">
-        <h2 className="text-2xl font-bold mb-4">Captive Portal</h2>
-        <CaptivePortal />
-      </section>
-      
-      <section className="mb-8">
-        <h2 className="text-2xl font-bold mb-4">WebSocket Example (Direct)</h2>
-        <WebSocketClient />
-      </section>
-      
-      <section className="mb-8">
-        <h2 className="text-2xl font-bold mb-4">Real-Time Brain Visualization</h2>
-        <NeuralVisualization />
-      </section>
-      
-      <section className="mb-8">
-        <h2 className="text-2xl font-bold mb-4">Network Visualization</h2>
-        <NetworkVisualization />
-      </section>
-    </main>
-  );
-};
+    <div>
+        {/* Display NeuralVisualization and Kanban */}
+        <div style={{display: 'flex'}}>
+            <div style={{width: '50vw'}}>
+                {/* Put Kanban Component Here */}
+            </div>
+            <div style={{width: '50vw'}}>
+               <NeuralVisualization />
+            </div>
+        </div>
 
-export default Page;
+      <h1>Ask Claude</h1>
+      <form onSubmit={handleSubmit}>
+        <textarea
+          value={message}
+          onChange={(e) => setMessage(e.target.value)}
+          placeholder="Enter your message for Claude..."
+          rows={4}
+          cols={50}
+        />
+        <br />
+        <button type="submit" disabled={loading}>
+          {loading ? 'Sending...' : 'Send to Claude'}
+        </button>
+      </form>
+        <FileUpload onUploadSuccess={handleUploadSuccess}/>
+      {error && <p style={{ color: 'red' }}>{error}</p>}
+
+      {response && (
+        <div>
+          <h2>Claude's Response:</h2>
+          <p>{response}</p>
+        </div>
+      )}
+    </div>
+  );
+}

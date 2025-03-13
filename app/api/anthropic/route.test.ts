@@ -6,19 +6,17 @@ import { POST } from './route';
 const mockFetch = vi.fn();
 global.fetch = mockFetch;
 
-// Mock console.error
-const originalConsoleError = console.error;
-console.error = vi.fn();
-
 describe('Anthropic API Route', () => {
   beforeEach(() => {
     // Reset mocks before each test
     vi.clearAllMocks();
+    // Properly spy on console.error
+    vi.spyOn(console, 'error');
   });
 
   afterEach(() => {
-    // Restore console.error after tests
-    console.error = originalConsoleError;
+    // Restore all mocks after tests
+    vi.restoreAllMocks();
   });
 
   it('returns a successful response when the Rust backend returns valid data', async () => {

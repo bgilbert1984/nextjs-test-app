@@ -8,6 +8,9 @@
 # testing
 /coverage
 
+#Uploaded Files
+uploads/
+
 # next.js
 /.next/
 /out/
